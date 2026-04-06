@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUS6002 เศรษฐศาสตร์ธุรกิจ - อาจารย์ ดร.วัลลภ คุ้มประดิษฐ์</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. CORE SYSTEM */
+        :root {
+            --navy: #002147;
+            --gold: #D4AF37;
+            --white: #ffffff;
+            --slate: #334155;
+            --red-alert: #ef4444;
+            --blue-cold: #3b82f6;
+            --green-up: #22c55e;
+            --bg-light: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: #111; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            font-family: 'Sarabun', sans-serif;
+            color: var(--slate);
+            -webkit-user-select: none; /* ป้องกันการคลุมดำที่ทำให้คลิกเพี้ยน */
+            user-select: none;
+        }
+
+        /* 2. PRESENTATION CONTAINER */
+        #presentation {
+            width: 1280px; 
+            height: 720px; 
+            background: var(--white); 
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            transform-origin: center center;
+            overflow: hidden;
+        }
+
+        /* 3. SLIDES (Display None/Flex ensures no invisible layers block clicks) */
+        .slide {
+            display: none; 
+            flex-direction: column;
+            width: 100%; 
+            height: 100%;
+            padding: 50px 100px;
+            background: var(--white);
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 10;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: fadeIn 0.4s ease-out forwards;
+            z-index: 20;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 4. TYPOGRAPHY */
+        h1, h2, h3, h4 { font-family: 'Kanit', sans-serif; color: var(--navy); }
+        .slide-title { font-size: 36px; border-left: 10px solid var(--gold); padding-left: 20px; margin-bottom: 25px; font-weight: 600; line-height: 1.2; }
+        p, li { font-size: 21px; line-height: 1.6; margin-bottom: 12px; }
+        strong { color: var(--navy); font-weight: 700; }
+
+        /* 5. LAYOUTS & COMPONENTS */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex-grow: 1; align-items: start; }
+        .info-box { background: var(--bg-light); padding: 25px; border-radius: 15px; border-left: 8px solid var(--navy); margin-bottom: 15px; }
+        .info-box-gold { background: #fffcf0; border-left-color: var(--gold); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 5px solid var(--gold); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
+        .badge { display: inline-block; background: var(--navy); color: white; padding: 6px 18px; border-radius: 30px; font-size: 15px; font-family: 'Kanit'; margin-bottom: 15px; }
+
+        /* 6. VISUAL ANIMATIONS */
+        .delay-1 { animation: fadeIn 0.5s ease-out 0.2s both; }
+        .delay-2 { animation: fadeIn 0.5s ease-out 0.4s both; }
+        .delay-3 { animation: fadeIn 0.5s ease-out 0.6s both; }
+
+        @keyframes knight-jump { 0%, 100% { transform: translate(0, 0); opacity: 0.8; } 30% { transform: translate(60px, -50px) scale(1.1); opacity: 1; text-shadow: 0 20px 30px rgba(212,175,55,0.6); } 60% { transform: translate(60px, 0) scale(1); opacity: 0.9; text-shadow: 0 10px 15px rgba(212,175,55,0.3); } }
+        .animated-chess { display: inline-block; animation: knight-jump 3s infinite cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+        .ocean { position: relative; height: 220px; background: #e2e8f0; border-radius: 15px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .ship { font-size: 100px; color: var(--navy); animation: sway 4s infinite ease-in-out; }
+        @keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg) translateY(-10px); } }
+
+        @keyframes pulse-fever { 0%, 100% { color: var(--red-alert); transform: scale(1); } 50% { color: #dc2626; transform: scale(1.1); text-shadow: 0 0 15px rgba(239,68,68,0.4); } }
+        .fever { animation: pulse-fever 2s infinite; }
+        @keyframes shiver { 0%, 100% { transform: translateX(0); color: var(--blue-cold); } 25%, 75% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+        .cold { animation: shiver 1s infinite; }
+
+        @keyframes blink-alert { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .blinking { animation: blink-alert 1.5s infinite; }
+
+        /* 7. NAVIGATION CONTROLS (BULLETPROOF) */
+        .nav-overlay-btn {
+            position: absolute; top: 0; bottom: 0; width: 100px; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0); color: rgba(0,33,71,0.2); font-size: 40px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .nav-overlay-btn:hover { background: rgba(0,0,0,0.05); color: var(--navy); }
+        #btnLeft { left: 0; }
+        #btnRight { right: 0; }
+
+        .bottom-controls { position: absolute; bottom: 25px; right: 40px; display: flex; gap: 15px; z-index: 10000; }
+        .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--navy); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.2s; }
+        .circle-btn:hover { background: var(--gold); transform: scale(1.1); }
+
+        .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 8px; background: #e2e8f0; z-index: 9998; }
+        .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: 0.3s; }
+
+        .footer-logo { position: absolute; bottom: 15px; left: 100px; font-size: 15px; color: #94a3b8; font-weight: 700; z-index: 100; font-family: 'Kanit'; }
+
+        /* COVERS & GRAPHS */
+        .cover { background: var(--navy); color: white; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin: -50px -100px; padding: 0 100px; }
+        .cover h1 { color: var(--gold); font-size: 64px; margin-bottom: 20px; line-height: 1.2; }
+        .cover p { color: white; font-size: 28px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: var(--navy); color: white; padding: 12px; text-align: left; font-family: 'Kanit'; font-size: 18px; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 18px; vertical-align: top; background: white; }
+        
+        .graph-frame { background: white; padding: 10px; border-radius: 12px; border: 2px solid #eee; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; height: 480px; width: 100%; }
+        .graph-frame img { width: 100%; height: 100%; object-fit: contain; }
+    </style>
+</head>
+<body>
+
+<div id="presentation" class="presentation">
+    
+    <!-- NAVIGATION ELEMENTS -->
+    <div id="btnLeft" class="nav-overlay-btn" title="ย้อนกลับ"><i class="fa-solid fa-chevron-left"></i></div>
+    <div id="btnRight" class="nav-overlay-btn" title="ถัดไป"><i class="fa-solid fa-chevron-right"></i></div>
+    
+    <div class="bottom-controls">
+        <button class="circle-btn" id="btnBottomLeft"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="circle-btn" id="btnBottomRight"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="footer-logo">BUS6002 | อาจารย์ ดร.วัลลภ คุ้มประดิษฐ์</div>
+
+    <!-- ================================================== -->
+    <!-- MASTER TITLE                                       -->
+    <!-- ================================================== -->
+    <div class="slide active">
+        <div style="margin: auto; text-align: center; width: 100%;">
+            <p class="fade-up" style="color: var(--gold); font-weight: 700; letter-spacing: 5px; font-size: 20px;">คณะเศรษฐศาสตร์ มหาวิทยาลัยรามคำแหง</p>
+            <h1 style="font-size: 80px; margin: 30px 0;">BUS6002 เศรษฐศาสตร์ธุรกิจ</h1>
+            <div style="width: 200px; height: 8px; background: var(--gold); margin: 0 auto 60px auto;"></div>
+            <div class="delay-1" style="margin-top: 40px;">
+                <p style="font-size: 36px; font-weight: 700; color: var(--navy); margin-bottom: 5px;">อาจารย์ ดร.วัลลภ คุ้มประดิษฐ์</p>
+                <p style="color: #94a3b8; font-size: 24px;">Wonlope Khumpradith</p>
+            </div>
+            <p class="delay-2" style="margin-top: 60px; color: #cbd5e1; font-size: 16px;">(คลิกหน้าจอ, ใช้ลูกศรข้าง, หรือคีย์บอร์ดเพื่อเปลี่ยนสไลด์)</p>
+        </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- MODULE 1                                           -->
+    <!-- ================================================== -->
+    
+    <div class="slide">
+        <div class="cover">
+            <h1>Module 1: เศรษฐศาสตร์มหภาคเกี่ยวอะไรกับ<br>ผู้บริหารธุรกิจทางการเงิน</h1>
+            <p class="delay-1">1. บทนำ: เปลี่ยนมุมมองจาก "นักเศรษฐศาสตร์" สู่ "ผู้บริหารการเงิน"</p>
+        </div>
+    </div>
+
+    <!-- 1.1 -->
+    <div class="slide">
+        <h2 class="slide-title">1.1 ทำไมผู้บริหารต้องเข้าใจมหภาค?</h2>
+        <div class="two-col">
+            <div>
+                <p>หลายคนอาจมีภาพจำจากการเรียนในระดับปริญญาตรีว่า เศรษฐศาสตร์คือวิชาที่เต็มไปด้วยกราฟเส้นตัดกัน หรือสมการหาจุดสมดุล (Equilibrium) ซึ่งมักถูกมองว่าเป็นหน้าที่ของธนาคารกลางหรือกระทรวงการคลัง</p>
+                <div class="info-box delay-1" style="margin-top: 30px;">
+                    <strong>การเปลี่ยนชุดความคิด (Mindset Shift) ใหม่ทั้งหมด:</strong> ในระดับ MBA Finance and Banking เราไม่ได้เรียนวิชานี้เพื่อไปกำหนดนโยบายระดับประเทศ แต่เราเรียนเพื่อ <strong>"อ่านเกม เอาตัวรอด และหาโอกาสทำกำไร"</strong> ในโลกที่เต็มไปด้วยความผันผวน
+                </div>
+            </div>
+            <div class="delay-2" style="text-align: center; padding-top: 50px;">
+                <div class="animated-chess">
+                    <i class="fa-solid fa-chess-knight" style="font-size: 180px; color: var(--gold);"></i>
+                </div>
+                <p style="font-weight: 700; color: var(--gold); margin-top: 30px; font-size: 24px;">อ่านเกม & หาโอกาส</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.2 -->
+    <div class="slide">
+        <h2 class="slide-title">1.2 อุปมาอุปไมย: มหภาคคือ "สภาพอากาศ (Business Weather)"</h2>
+        <div class="two-col">
+            <div>
+                <p>เศรษฐกิจมหภาคคือ <strong>"สภาพแวดล้อมทางธุรกิจ"</strong> หรือ <strong>"สภาพอากาศ"</strong></p>
+                <p>ผู้บริหาร (เปรียบเหมือนกัปตันเรือ) ไม่สามารถสั่งให้พายุสงบ (สั่งให้เงินเฟ้อลด) หรือสั่งให้ฝนหยุดตก (สั่งให้ดอกเบี้ยถูกลง) ได้</p>
+                <div class="info-box info-box-gold delay-1" style="font-size: 22px; font-weight: 500; margin-top: 30px;">
+                    "แต่กัปตันที่อ่านเรดาร์อากาศเป็นจะรู้ล่วงหน้าเสมอว่าควรจัดการเรืออย่างไร"
+                </div>
+            </div>
+            <div class="delay-2">
+                <div class="ocean"><i class="fa-solid fa-ship ship"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STORM -->
+    <div class="slide">
+        <h2 class="slide-title">เมื่อพายุเข้า: ต้องเตรียมตัวรับมือ</h2>
+        <div class="grid-3 delay-1">
+            <div class="info-box" style="text-align:center;">
+                <i class="fa-solid fa-umbrella" style="font-size:40px; color:var(--navy); margin-bottom:15px;"></i>
+                <h3>เตรียมร่ม</h3>
+                <p style="font-size:18px;">ทำ <strong>Hedging</strong> ป้องกันความเสี่ยงค่าเงิน</p>
+            </div>
+            <div class="info-box" style="text-align:center;">
+                <i class="fa-solid fa-anchor" style="font-size:40px; color:var(--navy); margin-bottom:15px;"></i>
+                <h3>ลดใบเรือ</h3>
+                <p style="font-size:18px;">ชะลอการลงทุน <strong>CAPEX</strong> เพื่อลดความเสี่ยง</p>
+            </div>
+            <div class="info-box" style="text-align:center;">
+                <i class="fa-solid fa-vault" style="font-size:40px; color:var(--navy); margin-bottom:15px;"></i>
+                <h3>ตุนเสบียง</h3>
+                <p style="font-size:18px;">เพิ่มสภาพคล่อง/เก็บเงินสดในมือ</p>
+            </div>
+        </div>
+        <div class="info-box delay-2" style="margin-top: 20px; font-size: 16px;">
+            <strong>CapEx (Capital Expenditure):</strong> คือ รายจ่ายฝ่ายทุน หรือเงินลงทุนก้อนใหญ่ที่ธุรกิจจ่ายเพื่อซื้อ ปรับปรุง หรือบำรุงรักษาสินทรัพย์ถาวร (เช่น ที่ดิน อาคาร เครื่องจักร) เพื่อประโยชน์ในระยะยาวมากกว่า 1 ปี โดยจะบันทึกเป็นสินทรัพย์ในงบดุลและทยอยตัดค่าเสื่อมราคา
+        </div>
+    </div>
+
+    <!-- GROWTH -->
+    <div class="slide">
+        <h2 class="slide-title">เมื่อคลื่นลมสงบและลมส่งท้าย: เป็นจังหวะเร่งตักน้ำ</h2>
+        <div class="two-col">
+            <div>
+                <ul style="list-style: none; padding: 0;">
+                    <li class="delay-1"><i class="fa-solid fa-rocket" style="color: var(--gold); margin-right: 15px;"></i> <strong>Aggressive Growth:</strong> เร่งการเติบโตอย่างเต็มที่</li>
+                    <li class="delay-1"><i class="fa-solid fa-chart-line" style="color: var(--gold); margin-right: 15px;"></i> <strong>Loan Expansion:</strong> ขยายพอร์ตสินเชื่อ</li>
+                    <li class="delay-1"><i class="fa-solid fa-handshake" style="color: var(--gold); margin-right: 15px;"></i> <strong>เข้าซื้อกิจการ (M&A):</strong> ในช่วงที่ต้นทุนทางการเงินยังต่ำอยู่</li>
+                </ul>
+            </div>
+            <div class="info-box info-box-gold delay-2">
+                <h3>M&A (Mergers and Acquisitions)</h3>
+                <p style="font-size: 18px;">คือการควบรวมและซื้อกิจการ เป็นกลยุทธ์ทางธุรกิจที่บริษัทตั้งแต่ 2 แห่งขึ้นไปมารวมกัน หรือเข้าไปซื้อกิจการอีกแห่งหนึ่ง เพื่อเพิ่มขีดความสามารถ ขยายธุรกิจ ลดต้นทุน หรือเพื่อการเติบโตอย่างรวดเร็ว</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.3 -->
+    <div class="slide">
+        <h2 class="slide-title">1.3 ความแตกต่าง: มหภาคเชิงทฤษฎี VS มหภาคสำหรับผู้บริหาร</h2>
+        <p>เปรียบเทียบคำถามที่นักเศรษฐศาสตร์ถาม กับสิ่งที่ผู้บริหารธนาคารต้องถาม:</p>
+        <div class="two-col delay-1" style="margin-top: 20px;">
+            <div style="background:#f1f5f9; padding:35px; border-radius:20px; border-top:10px solid #94a3b8;">
+                <h3 style="color:#64748b;"><i class="fa-solid fa-graduation-cap"></i> นักเศรษฐศาสตร์ (Academic)</h3>
+                <p style="margin-top: 15px;">"อดีตที่ผ่านมา ทำไม GDP ถึงหดตัว? จุดสมดุลใหม่ควรอยู่ที่ระดับใด?"</p>
+                <p style="font-size:16px; color:#94a3b8; margin-top:20px;">(เน้นวิเคราะห์อดีตและหาสาเหตุ)</p>
+            </div>
+            <div class="delay-2" style="background:var(--navy); padding:35px; border-radius:20px; border-top:10px solid var(--gold); color:white;">
+                <h3 style="color:var(--gold);"><i class="fa-solid fa-user-tie"></i> ผู้บริหารการเงิน (Executive)</h3>
+                <p style="color:white; margin-top: 15px;">"จากแนวโน้ม GDP หดตัวพรุ่งนี้ ลูกค้าจะยังมีปัญญาจ่ายหนี้ไหม? แบงก์ควรตั้งสำรอง (ECL) เพิ่มเท่าไหร่? ควรขึ้นดอกเบี้ยชดเชยความเสี่ยงไหม?"</p>
+                <p style="font-size:16px; color:#cbd5e1; margin-top:20px;">(เน้นอนาคตและการตัดสินใจ)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.4 -->
+    <div class="slide">
+        <h2 class="slide-title">1.4 กฎเหล็ก 3 ประการ (The Holy Trinity)</h2>
+        <p class="delay-1">ทำความเข้าใจว่าตัวเลขระดับประเทศ (Macro Indicators) วิ่งเข้าไปกระทบ "งบการเงิน" อย่างไร:</p>
+        <div class="delay-2" style="margin-top: 20px;">
+            <table>
+                <thead>
+                    <tr><th width="30%">งบการเงิน</th><th>ผลกระทบจากปัจจัยมหภาค</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>งบกำไรขาดทุน (P&L)</strong></td><td>มหภาคกระทบยอดขาย (Top-line) ผ่านกำลังซื้อของผู้บริโภค และกระทบต้นทุน (Bottom-line) ผ่านราคาสินค้าและอัตราแลกเปลี่ยน</td></tr>
+                    <tr><td><strong>งบดุล (Balance Sheet)</strong></td><td>กระทบมูลค่าสินทรัพย์และหนี้สิน โดยเฉพาะโครงสร้างเงินทุน (Capital Structure) เมื่ออัตราดอกเบี้ยตลาดเปลี่ยน จะส่งผลโดยตรงต่อต้นทุนทางการเงิน (WACC)</td></tr>
+                    <tr><td><strong>กระแสเงินสด (Cash Flow)</strong></td><td>ภาวะเศรษฐกิจตึงตัวกระทบความสามารถในการชำระหนี้ของลูกค้า ซึ่งส่งผลโดยตรงต่อระดับสภาพคล่อง และปัญหาหนี้เสีย (NPL) ของธนาคาร</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODULE 1 - DEEP DIVE COVER -->
+    <div class="slide">
+        <div class="cover">
+            <h1>2. การถอดรหัส 5 ตัวแปรมหภาค</h1>
+            <p class="delay-1">สู่ภาษาการเงินและธุรกิจ (Deep Dive)</p>
+            <p class="delay-2" style="font-size: 20px; margin-top: 20px; opacity: 0.8; max-width: 800px;">"ผู้บริหารการเงินต้องมองทะลุตัวเลขมหภาค ให้กลายเป็น Financial Metrics ของบริษัท การเปลี่ยนแปลงเพียง 1% ของตัวแปรเหล่านี้ สามารถพลิกชะตากรรมของงบการเงินได้"</p>
+        </div>
+    </div>
+
+    <!-- 2.1 GDP -->
+    <div class="slide">
+        <h2 class="slide-title">2.1 GDP (การเติบโตทางเศรษฐกิจ)</h2>
+        <div class="badge delay-1">Financial Metric: Top-line Revenue & Operating Leverage</div>
+        <div class="two-col delay-2">
+            <div class="info-box">
+                <h4><i class="fa-solid fa-building"></i> มุมมอง Corporate Finance:</h4>
+                <p style="font-size: 18px;">GDP คือกำลังซื้อ (Purchasing Power) หาก GDP หดตัว ยอดขายจะโตยาก ธุรกิจที่มี <strong>Operating Leverage สูง</strong> (ต้นทุนคงที่สูง เช่น สายการบิน โรงแรม อสังหาฯ) จะเจ็บหนักที่สุด เพราะเมื่อรายได้ลดลงเพียงเล็กน้อย กำไรสุทธิจะดิ่งลงรุนแรง</p>
+            </div>
+            <div class="info-box info-box-gold">
+                <h4><i class="fa-solid fa-building-columns"></i> มุมมอง Banking:</h4>
+                <p style="font-size: 18px;">ปกติ "Loan Growth" จะเป็นเงาตามตัวของ GDP หาก GDP โตต่ำ ธนาคารจะหาสินเชื่อปล่อยใหม่ได้ยาก นำไปสู่สภาวะ <strong>"สภาพคล่องล้นแบงก์" (Excess Liquidity)</strong> ทำให้ต้องเอาเงินไปลงทุนในสินทรัพย์ผลตอบแทนต่ำแทน</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.2 INFLATION -->
+    <div class="slide">
+        <h2 class="slide-title">2.2 Inflation (เงินเฟ้อ)</h2>
+        <div class="badge delay-1">Financial Metric: Pricing Power & Real Yield</div>
+        <div class="two-col delay-2">
+            <div class="info-box">
+                <h4><i class="fa-solid fa-tags"></i> มุมมอง Corporate Finance:</h4>
+                <p style="font-size: 18px;">เงินเฟ้อคือบททดสอบ <strong>"อำนาจการตั้งราคา (Pricing Power)"</strong> หากต้นทุนวัตถุดิบพุ่งขึ้น แต่บริษัทขายสินค้าที่ลูกค้าเปลี่ยนใจง่าย บริษัทจะผลักภาระไม่ได้ ส่งผลให้ Gross Profit Margin ถูกบีบอัด (Margin Squeeze) ทันที</p>
+            </div>
+            <div class="info-box info-box-gold">
+                <h4><i class="fa-solid fa-building-columns"></i> มุมมอง Banking:</h4>
+                <p style="font-size: 18px;">เงินเฟ้อกัดกิน <strong>"ผลตอบแทนที่แท้จริง (Real Interest Rate)"</strong> ของเจ้าหนี้ หากปล่อยกู้ Fixed Rate 5% แต่เงินเฟ้อ 4% จะได้ส่วนต่างแค่ 1% นอกจากนี้ เงินเฟ้อที่สูงยังทำให้อำนาจซื้อลูกหนี้ลดลง เพิ่มความเสี่ยงผิดนัดชำระหนี้</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.3 INTEREST RATE -->
+    <div class="slide">
+        <h2 class="slide-title">2.3 Interest Rate (อัตราดอกเบี้ย)</h2>
+        <div class="badge delay-1">Financial Metric: Cost of Capital (WACC), Valuation & NIM</div>
+        <div class="two-col delay-2">
+            <div class="info-box">
+                <h4><i class="fa-solid fa-chart-pie"></i> มุมมอง Corporate Finance:</h4>
+                <p style="font-size: 18px;">ดอกเบี้ยคือ <strong>"แรงโน้มถ่วง"</strong> ของ Valuation เมื่อดอกเบี้ยนโยบายขึ้น ต้นทุนเงินกู้จะพุ่งตาม ส่งผลให้ WACC สูงขึ้น โครงการลงทุน (CAPEX) ที่เคยคุ้มค่า อาจมี NPV ติดลบ ทำให้บริษัทต้องล้มเลิกแผนขยายกิจการ</p>
+            </div>
+            <div class="info-box info-box-gold">
+                <h4><i class="fa-solid fa-building-columns"></i> มุมมอง Banking:</h4>
+                <p style="font-size: 18px;">ดอกเบี้ยกระทบโดยตรงต่อ <strong>NIM (Net Interest Margin)</strong> หากดอกเบี้ยสูงเกินไปจนลูกหนี้จ่ายไม่ไหว ดอกเบี้ยรับที่คาดว่าจะได้จะกลายเป็น NPL และต้องนำกำไรไปตั้งสำรอง (ECL) แทน</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.4 EXCHANGE RATE -->
+    <div class="slide">
+        <h2 class="slide-title">2.4 Exchange Rate (อัตราแลกเปลี่ยน)</h2>
+        <div class="badge delay-1">Financial Metric: FX Exposure & Hedging Costs</div>
+        <div class="delay-2">
+            <p><strong>มุมมอง Corporate Finance:</strong> อัตราแลกเปลี่ยนสร้างความเสี่ยง 3 ระดับ:</p>
+            <div class="grid-3" style="margin-bottom: 20px;">
+                <div class="card"><h4 style="font-size: 18px;">Transaction Exposure</h4><p style="font-size: 15px;">ขาดทุนจากส่วนต่างอัตราแลกเปลี่ยน ณ วันที่รับ/จ่ายเงินจริง (กระทบ Cash Flow)</p></div>
+                <div class="card"><h4 style="font-size: 18px;">Translation Exposure</h4><p style="font-size: 15px;">ขาดทุนทางบัญชีเวลาแปลงค่างบการเงินของบริษัทลูกกลับมาเป็นเงินบาท (กระทบ Book Value)</p></div>
+                <div class="card"><h4 style="font-size: 18px;">Economic Exposure</h4><p style="font-size: 15px;">โครงสร้างความสามารถในการแข่งขันเปลี่ยนไป (เช่น บาทแข็งมาก สินค้าไทยแพงกว่าคู่แข่ง)</p></div>
+            </div>
+            <div class="info-box info-box-gold">
+                <strong>มุมมอง Banking:</strong> ธนาคารมีบทบาทสำคัญในการขายเครื่องมือป้องกันความเสี่ยง (Derivatives เช่น Forward, Options) ความผันผวนของค่าเงินจึงเป็นทั้งความเสี่ยงของลูกค้า และ <strong>"โอกาสในการสร้างรายได้ค่าธรรมเนียม (Fee Income)"</strong> ของธนาคาร
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.5 CREDIT CYCLE -->
+    <div class="slide">
+        <h2 class="slide-title">2.5 Credit Cycle (วงจรสินเชื่อ)</h2>
+        <div class="badge delay-1">Financial Metric: Liquidity Risk & Credit Spreads</div>
+        <div class="two-col delay-2">
+            <div class="info-box">
+                <h4><i class="fa-solid fa-arrows-spin"></i> มุมมอง Corporate Finance:</h4>
+                <p style="font-size: 18px;">ในยุคเครดิตตึงตัว (Credit Crunch) ต่อให้บริษัทมีกำไร แต่ถ้าไม่สามารถ Rollover หุ้นกู้ที่กำลังจะหมดอายุได้ บริษัทอาจล้มละลายทันที สัญญาณที่ต้องดูคือ <strong>Credit Spread</strong> (ส่วนต่างดอกเบี้ยหุ้นกู้เอกชนกับรัฐบาล) หากกว้างขึ้น แปลว่าตลาดกำลังกลัวการเบี้ยวหนี้</p>
+            </div>
+            <div class="info-box info-box-gold">
+                <h4><i class="fa-solid fa-building-columns"></i> มุมมอง Banking:</h4>
+                <p style="font-size: 18px;">เครดิตตึงตัวเกิดจากธนาคารเข้มงวดกับเกณฑ์การปล่อยสินเชื่อ เช่น การลด LTV (Loan-to-Value) หรือการคุม DSR ให้ต่ำลงเพื่อป้องกันความเสี่ยง ซึ่งจะวนกลับไปทำให้กำลังซื้อในระบบเศรษฐกิจ (GDP) ชะลอตัวลงไปอีก</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- MODULE 2                                           -->
+    <!-- ================================================== -->
+    <div class="slide">
+        <div class="cover">
+            <h1>Module 2: โครงสร้าง GDP ไทย</h1>
+            <p class="delay-1">ทำไมบางคนรวยขึ้น แต่บางคนเจ็บหนัก? (Deep Dive)</p>
+        </div>
+    </div>
+
+    <!-- 1. ILLUSION OF GDP -->
+    <div class="slide">
+        <h2 class="slide-title">1. บทนำ: เมื่อตัวเลข GDP หลอกตาเรา</h2>
+        <div class="two-col">
+            <div>
+                <p>ในรายงานเศรษฐกิจประจำไตรมาส พาดหัวข่าวมักจะบอกว่า <strong>"GDP ไทยโต 2.5%"</strong> หรือ <strong>"เศรษฐกิจฟื้นตัวต่อเนื่อง"</strong></p>
+                <div class="info-box delay-1" style="margin-top: 20px;">
+                    <p style="margin: 0; font-size: 19px;">ตัวเลขนี้เปรียบเสมือนการวัด <strong>"อุณหภูมิเฉลี่ย"</strong> ของร่างกายมนุษย์ ซึ่งอาจจะอยู่ที่ 37 องศาเซลเซียสดูเหมือนปกติ...</p>
+                </div>
+                <div class="info-box info-box-gold delay-2" style="margin-top: 15px;">
+                    <p style="margin: 0; font-size: 19px;">แต่แท้จริงแล้ว ศีรษะอาจจะกำลังเป็นไข้สูง 40 องศา (ภาคส่วนที่ร้อนแรงเกินไป) ในขณะที่เท้ากำลังเย็นเฉียบติดลบ (ภาคส่วนที่กำลังขาดสภาพคล่องและตายลง)</p>
+                </div>
+            </div>
+            <div class="delay-2" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; background: var(--bg-light); border-radius: 20px; padding: 30px;">
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-head-side-virus fever" style="font-size: 60px;"></i>
+                    <p style="font-weight: 700; color: var(--red-alert); margin-top: 10px; font-size: 18px;">ศีรษะไข้สูง 40°</p>
+                </div>
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-temperature-half" style="font-size: 40px; color: var(--slate);"></i>
+                    <p style="font-weight: 700; color: var(--slate); margin-top: 10px; font-size: 18px;">เฉลี่ย 37° (GDP รวม)</p>
+                </div>
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-shoe-prints cold" style="font-size: 60px;"></i>
+                    <p style="font-weight: 700; color: var(--blue-cold); margin-top: 10px; font-size: 18px;">เท้าเย็นเฉียบติดลบ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.1 AGGREGATION BIAS -->
+    <div class="slide">
+        <h2 class="slide-title">1.1 ภาพลวงตาทางสถิติ (Aggregation Bias)</h2>
+        <div class="two-col">
+            <div>
+                <p>สิ่งที่ผู้บริหารการเงินต้องระวังที่สุดคือ <strong>Aggregation Bias (ความลำเอียงจากการรวมข้อมูล)</strong></p>
+                <p class="delay-1">ตัวเลข GDP คือค่าเฉลี่ยแบบถ่วงน้ำหนัก (Weighted Average) หมายความว่า หากบริษัทระดับ Conglomerate เพียงไม่กี่แห่งมีกำไรมหาศาล หรือภาคการท่องเที่ยวระดับ Luxury เติบโตอย่างก้าวกระโดด มูลค่าทางเศรษฐกิจที่สูงลิ่วของกลุ่มนี้จะ <strong>"ดึงค่าเฉลี่ย"</strong> ของประเทศให้เป็นบวกได้ทันที</p>
+            </div>
+            <div class="info-box info-box-gold delay-2" style="display: flex; align-items: center; padding: 40px;">
+                <div>
+                    <i class="fa-solid fa-mask" style="font-size: 60px; color: var(--gold); margin-bottom: 20px;"></i>
+                    <p style="font-size: 22px; font-weight: 700; margin: 0; line-height: 1.6;">
+                        ซึ่งการเป็นบวกนี้ได้บดบังความจริง (Masking the reality) ที่ว่า ธุรกิจ SME แบบดั้งเดิมนับหมื่นรายกำลังเผชิญภาวะขาดทุนหรือต้องปิดกิจการ
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.2 K-SHAPED RECOVERY -->
+    <div class="slide">
+        <h2 class="slide-title">1.2 เจาะลึก K-Shaped Recovery ในมิติทางการเงิน</h2>
+        <div>
+            <p>ปรากฏการณ์ที่กล่าวมาข้างต้น ในทางเศรษฐศาสตร์เรียกว่า <strong>K-Shaped Recovery (การฟื้นตัวแบบตัว K)</strong> หรือ <strong>Uneven Recovery (การฟื้นตัวที่ไม่เท่าเทียม)</strong> ซึ่งเป็นลักษณะเฉพาะที่ฝังรากลึกในเศรษฐกิจไทยยุคหลังโควิด (ปี 2025-2026)</p>
+            <p class="delay-1">หากเราผ่าตัว K ออกมาในมุมมองของสายการเงิน จะพบความขัดแย้งดังนี้:</p>
+            
+            <div class="delay-2" style="display: flex; justify-content: center; gap: 80px; margin-top: 30px; align-items: center;">
+                <div style="font-size: 150px; font-weight: 900; font-family: 'Kanit'; color: #e2e8f0; position: relative;">
+                    K
+                    <i class="fa-solid fa-arrow-right-long k-up"></i>
+                    <i class="fa-solid fa-arrow-right-long k-down"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINNERS -->
+    <div class="slide">
+        <h2 class="slide-title">ขาขึ้นของตัว K (The Winners - ขวาบน)</h2>
+        <p><strong>กลุ่มธุรกิจ:</strong> กลุ่มทุนใหญ่, บริษัทเทคโนโลยี, ธุรกิจท่องเที่ยวระดับพรีเมียม และกลุ่มผู้มีรายได้สูง (High Net Worth)</p>
+        <div class="info-box info-box-gold delay-1" style="margin-top: 30px; padding: 40px;">
+            <h4 style="font-size: 24px; margin-bottom: 15px;"><i class="fa-solid fa-money-bill-trend-up" style="color:var(--gold);"></i> สถานะทางการเงิน:</h4>
+            <p style="font-size: 22px; line-height: 1.6; margin: 0;">กลุ่มนี้มี <strong>"เงินสดล้นมือ (Cash-rich)"</strong> ได้ประโยชน์จากภาวะดอกเบี้ยสูง (รับผลตอบแทนจากเงินฝากและพันธบัตร) มีอำนาจต่อรองสูงในการกดต้นทุน และสามารถลงทุนนำ AI/Automation มาใช้เพิ่ม Margin ได้</p>
+        </div>
+    </div>
+
+    <!-- LOSERS -->
+    <div class="slide">
+        <h2 class="slide-title">ขาลงของตัว K (The Losers - ขวาล่าง)</h2>
+        <p><strong>กลุ่มธุรกิจ:</strong> ธุรกิจ SME แบบดั้งเดิม, ภาคการผลิตเทคโนโลยีเก่า, และกลุ่มครัวเรือนเปราะบาง</p>
+        <div class="info-box delay-1" style="margin-top: 30px; padding: 40px; border-left-color: var(--red-alert);">
+            <h4 style="color: var(--red-alert); font-size: 24px; margin-bottom: 15px;"><i class="fa-solid fa-link-slash"></i> สถานะทางการเงิน:</h4>
+            <p style="font-size: 22px; line-height: 1.6; margin: 0;">เผชิญภาวะ <strong>"กับดักหนี้ (Debt Trap)"</strong> ถูกบีบจากทั้งต้นทุนวัตถุดิบที่สูงขึ้น แต่ไม่สามารถขึ้นราคาขายสินค้าได้ (No Pricing Power) แถมยังถูกซ้ำเติมจากธนาคารที่ปิดกั้นการเข้าถึงแหล่งเงินทุน (Credit Crunch)</p>
+        </div>
+    </div>
+
+    <!-- 1.3 IMPLICATION -->
+    <div class="slide">
+        <h2 class="slide-title">1.3 ผลกระทบต่อการวางนโยบายธนาคาร (Implication on Credit Policy)</h2>
+        <p class="delay-1">ผู้บริหารการเงินและนายธนาคารที่เก่ง จะไม่กำหนด Risk Appetite (ระดับความเสี่ยงที่ยอมรับได้) โดยอิงจาก Headline GDP (GDP รวม) เพียงอย่างเดียว</p>
+        <div class="info-box delay-2" style="margin-top: 20px; padding: 30px;">
+            <p style="margin: 0; font-size: 20px; line-height: 1.6;">
+                เพราะหากธนาคารมองเห็น GDP โต 3.0% แล้วสั่งให้ทีมขาย <strong>"เร่งปล่อยสินเชื่อในทุกเซกเตอร์ (Broad-based lending)"</strong> ธนาคารอาจจะเอาเงินไปปล่อยให้กับกลุ่ม "ขาลงของตัว K" อย่างไม่ตั้งใจ ซึ่งสุดท้ายจะกลายเป็นหนี้เสีย (NPL) ก้อนโตมหาศาลในอีก 6 เดือนข้างหน้า
+            </p>
+        </div>
+        <div class="info-box info-box-gold delay-3" style="padding: 30px;">
+            <p style="margin: 0; font-size: 20px; line-height: 1.6; font-weight: 500;">
+                ดังนั้น ทักษะที่สำคัญที่สุดในโมดูลนี้คือ การหัดเป็น <strong>"หมอผ่าตัด"</strong> ที่สามารถ ผ่า (Dissect) โครงสร้าง GDP ออกมาดูไส้ใน เพื่อแยกให้ออกว่า ใครคือผู้ชนะตัวจริงที่ควรปล่อยกู้ และใครคือผู้แพ้ที่ควรระมัดระวัง
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. PRODUCTION APPROACH -->
+    <div class="slide">
+        <div class="cover">
+            <h1>2. โครงสร้าง GDP ไทย:</h1>
+            <p class="delay-1">วิธีที่ง่ายที่สุดในการผ่าไส้ใน GDP คือการดูโครงสร้างเศรษฐกิจฝั่งการผลิต (Production Approach)</p>
+        </div>
+    </div>
+
+    <!-- 2.1 TOURISM -->
+    <div class="slide">
+        <h2 class="slide-title">2.1 ภาคการท่องเที่ยวและบริการ</h2>
+        <div class="badge delay-1">The Engine of Growth - ขาขึ้นที่กระจุกตัว</div>
+        <div class="two-col delay-2" style="margin-top: 10px;">
+            <div class="info-box">
+                <h4><i class="fa-solid fa-plane-arrival"></i> สถานการณ์จริง (บริบทปี 2025-2026):</h4>
+                <p style="margin-top: 15px; font-size: 18px;">แม้จำนวนนักท่องเที่ยวต่างชาติจะฟื้นตัวกลับมาใกล้เคียงระดับก่อนโควิด (ประมาณ 35-38 ล้านคน) และสร้างรายได้หลักเข้าประเทศ แต่รูปแบบการใช้จ่าย (Spending Pattern) เปลี่ยนไปอย่างมาก</p>
+            </div>
+            <div class="info-box info-box-gold">
+                <h4><i class="fa-solid fa-money-bill-trend-up"></i> ผู้ชนะ (The Winners):</h4>
+                <p style="margin-top: 15px; font-size: 18px;">โรงแรมเครือข่ายขนาดใหญ่ (Chain Hotels) ระดับ 4-5 ดาวในเมืองหลัก (ภูเก็ต, สมุย, กรุงเทพฯ), ธุรกิจสุขภาพและความงาม (Wellness & Medical Tourism) ที่เจาะกลุ่ม High Net Worth</p>
+                <p style="font-size: 16px; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px;"><strong>ผลกระทบทางการเงิน:</strong> กลุ่มนี้สามารถทำ ADR (ราคาห้องเฉลี่ย) และ RevPAR (รายได้ต่อห้อง) ได้สูงกว่าช่วงก่อนโควิด ส่งผลให้ Net Profit Margin ขยายตัว</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOURISM LOSERS -->
+    <div class="slide">
+        <h2 class="slide-title">ภาคการท่องเที่ยว: ผู้แพ้ (The Losers) และความเหลื่อมล้ำ</h2>
+        <p>โรงแรมขนาดเล็ก โฮสเทล และร้านค้า SME ในเมืองรอง ยังคงมี <strong>Occupancy Rate (อัตราการเข้าพัก)</strong> ที่ต่ำกว่าจุดคุ้มทุน</p>
+        <div class="info-box delay-1" style="margin-top: 30px; border-left-color: var(--red-alert); padding: 40px;">
+            <h4 style="color: var(--red-alert); font-size: 24px; margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation"></i> สาเหตุหลัก:</h4>
+            <p style="font-size: 20px; line-height: 1.6; margin: 0;">นักท่องเที่ยวจีนกลุ่ม Mass ทยอยเปลี่ยนรูปแบบเป็นทัวร์ศูนย์เหรียญยุคใหม่ หรือนักท่องเที่ยว FIT (เดินทางด้วยตัวเอง) นิยมใช้จ่ายผ่านแพลตฟอร์มต่างชาติ (OTA) ทำให้ <strong>"เม็ดเงินรั่วไหล"</strong> ไม่อยู่ในระบบเศรษฐกิจท้องถิ่น</p>
+        </div>
+    </div>
+
+    <!-- 2.2 MANUFACTURING -->
+    <div class="slide">
+        <h2 class="slide-title">2.2 ภาคการผลิตและส่งออก</h2>
+        <div class="badge delay-1" style="background: var(--red-alert);">The Engine of Drag - ขาลงเชิงโครงสร้าง</div>
+        <div class="info-box delay-1">
+            <h4>สถานการณ์จริง (บริบทปี 2025-2026):</h4>
+            <p style="margin-top: 10px; font-size: 18px;">ในขณะที่ท่องเที่ยวฟื้นตัว ดัชนีผลผลิตอุตสาหกรรม (MPI - Manufacturing Production Index) ของไทยกลับหดตัวต่อเนื่อง โรงงานหลายแห่งปิดตัว หรือต้องลดวันทำงาน (ลดโอที)</p>
+        </div>
+        
+        <h3 class="delay-2" style="margin: 20px 0;">ทำไมโรงงานถึงยอดตก? (ปัจจัยฉุดรั้ง):</h3>
+        <div class="two-col delay-2">
+            <div class="info-box info-box-gold">
+                <h4>1. สินค้าทะลักจากจีน (China Overcapacity & Dumping):</h4>
+                <p style="margin-top: 10px; font-size: 16px;">จีนประสบปัญหาเศรษฐกิจในประเทศ จึงส่งออกสินค้าราคาถูก (เหล็ก, ของอุปโภค, EV) มาดั๊มพ์ราคาในไทย ทำให้ SME สู้สงครามราคา (Price War) ไม่ได้</p>
+            </div>
+            <div class="info-box">
+                <h4>2. ปัญหาเชิงโครงสร้าง (Structural Headwinds):</h4>
+                <p style="margin-top: 10px; font-size: 16px;">สินค้าส่งออกหลักของไทยเป็น "เทคโนโลยีเก่า (Old Economy)" เช่น Hard Disk Drive และรถยนต์สันดาป ICE เราสูญเสียความสามารถในการแข่งขัน</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUFACTURING IMPACT -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบทางการเงินและบัญชี (ภาคการผลิต)</h2>
+        <div class="info-box delay-1" style="padding: 40px; border-left-color: var(--red-alert);">
+            <p style="font-size: 22px; line-height: 1.6; margin: 0;">
+                เมื่อโรงงานผลิตน้อยลง อัตราการใช้กำลังการผลิต (Capacity Utilization - CapU) จะลดลงตาม (เช่น ลดเหลือเพียง 55-60%) ทำให้ <strong>"ต้นทุนคงที่ต่อหน่วย (Fixed Cost per Unit)" พุ่งสูงขึ้น</strong> กำไรสุทธิจึงหดตัวรุนแรง
+            </p>
+            <p style="font-size: 22px; line-height: 1.6; margin-top: 20px;">
+                นอกจากนี้บริษัทอาจต้องเผชิญกับการตั้ง <strong>Impairment of Assets (การด้อยค่าของสินทรัพย์)</strong> หากเครื่องจักรนั้นไม่สามารถผลิตสินค้าที่ตอบโจทย์ตลาดได้อีกต่อไป
+            </p>
+        </div>
+    </div>
+
+    <!-- 2.3 AGRICULTURE -->
+    <div class="slide">
+        <h2 class="slide-title">2.3 ภาคการเกษตรและเศรษฐกิจฐานราก</h2>
+        <div class="badge delay-1" style="background: var(--slate);">The Fragile Base - ความเปราะบางของกำลังซื้อ</div>
+        <div class="two-col delay-2" style="margin-top: 15px;">
+            <div class="info-box" style="padding: 30px;">
+                <h4 style="font-size: 22px; margin-bottom: 15px;"><i class="fa-solid fa-seedling"></i> สถานการณ์จริง:</h4>
+                <p style="font-size: 20px;">แม้ตัวเลข GDP รวมจะถูกพยุงด้วยการท่องเที่ยว แต่คนไทยกว่า 30% อยู่ในภาคการเกษตร ซึ่งกำลังเผชิญปัญหาคู่ขนาน ทั้งปัญหาโครงสร้าง (สังคมสูงวัยในภาคเกษตร) และปัญหาการเปลี่ยนแปลงสภาพภูมิอากาศ (Climate Risk เช่น เอลนีโญ/ลานีญา)</p>
+            </div>
+            <div class="info-box info-box-gold" style="padding: 30px;">
+                <h4 style="font-size: 22px; margin-bottom: 15px;"><i class="fa-solid fa-money-check-dollar"></i> ผลกระทบทางการเงินและธนาคาร:</h4>
+                <p style="font-size: 18px;">รายได้เกษตรกรและแรงงานทรงตัวต่ำ สวนทางค่าครองชีพ ทำให้สัดส่วน <strong>DSR (Debt Service Ratio)</strong> พุ่งทะลุขีดจำกัด ส่งผลกระทบโดยตรงต่อยอดขายเชิงปริมาณ (Volume) ของกลุ่มค้าปลีก (FMCG) และส่งผลรุนแรงต่อธนาคารที่ปล่อยสินเชื่อเช่าซื้อรถยนต์และสินเชื่อส่วนบุคคล ที่ <strong>NPL ไหลตกชั้นอย่างรวดเร็ว</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CREDIT ASYMMETRY -->
+    <div class="slide">
+        <div class="cover">
+            <h1 class="delay-1">3. ความเหลื่อมล้ำในการเข้าถึงเงินทุน:</h1>
+            <p class="delay-2">ตลาดทุน (Capital Market) vs ตลาดสินเชื่อ (Bank Loan)</p>
+        </div>
+    </div>
+
+    <div class="slide">
+        <h2 class="slide-title">ความเหลื่อมล้ำทางเครดิต (Credit Asymmetry)</h2>
+        <p class="delay-1">อีกหนึ่งมิติของ Uneven Recovery ที่นักการเงินต้องเข้าใจ</p>
+        <div class="two-col delay-2" style="margin-top: 30px;">
+            <div class="info-box info-box-gold" style="padding: 30px;">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">ผู้ประกอบการรายใหญ่ (Large Corporates)</h3>
+                <p style="font-size: 18px; line-height: 1.6;">ไม่ได้รับผลกระทบจากธนาคารที่เข้มงวดการปล่อยสินเชื่อมากนัก เพราะพวกเขาสามารถ <strong>ข้ามธนาคาร (Bypass banks) ไป ออกหุ้นกู้ (Corporate Bonds)</strong> ระดมทุนโดยตรงจากนักลงทุนในตลาดทุนได้ด้วยต้นทุนดอกเบี้ยที่ต่ำกว่า</p>
+            </div>
+            <div class="info-box" style="padding: 30px; border-left-color: var(--red-alert);">
+                <h3 style="color: var(--red-alert); margin-bottom: 15px;">ผู้ประกอบการ SME (Micro/SME)</h3>
+                <p style="font-size: 18px; line-height: 1.6;">ไม่มีทางเลือกอื่นนอกจากพึ่งพาสินเชื่อธนาคาร (Bank Loan) แต่ด้วยปัญหาหนี้สะสมและเศรษฐกิจเปราะบาง ธนาคารจึงประเมินว่า SME มี <strong>Credit Risk สูงมาก นำไปสู่การปฏิเสธสินเชื่อ (High Rejection Rate)</strong> ทำให้ SME ขาด Working Capital จนต้องปิดกิจการ ทั้งๆ ที่ยังมีออเดอร์สินค้าอยู่</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- MODULE 3 - DATA & CONTEXT                            -->
+    <!-- ================================================== -->
+    <div class="slide">
+        <div class="cover">
+            <h1>4. กรณีศึกษาและข้อมูลจริง</h1>
+            <p class="delay-1">(Data & Context ปี 2025-2026)</p>
+            <p class="delay-2" style="font-size: 22px; opacity: 0.8; margin-top: 20px;">ส่วนนี้สำหรับให้ผู้สอนขึ้นจอเป็น Data Visualization เพื่อให้นักศึกษาเห็นภาพความย้อนแย้ง (Dichotomy) ของเศรษฐกิจไทย</p>
+        </div>
+    </div>
+
+    <!-- THE JAWS OF RISK -->
+    <div class="slide">
+        <h2 class="slide-title">📊 กราฟแนะนำ: "The Jaws of Risk" (ปากฉลามแห่งความเสี่ยง)</h2>
+        <div class="two-col" style="grid-template-columns: 350px 1fr; align-items: center; height: 100%;">
+            <div class="delay-1">
+                <p style="font-size: 16px;"><i class="fa-solid fa-chart-line" style="color:green;"></i> <strong>เส้นที่ 1 (สีเขียว):</strong> อัตราการขยายตัวของ GDP ไทย (แกว่งตัวระดับต่ำ 2.0% - 3.0%)</p>
+                <p style="font-size: 16px;"><i class="fa-solid fa-chart-line" style="color:red;"></i> <strong>เส้นที่ 2 (สีแดง):</strong> สัดส่วนหนี้ครัวเรือนต่อ GDP (ไต่ระดับจาก 70% ขึ้นมาแตะระดับ 90%+)</p>
+                <p style="font-size: 13px; color:#94a3b8;">แหล่งข้อมูลอ้างอิง: สำนักงานสภาพัฒนาการเศรษฐกิจและสังคมแห่งชาติ (NESDC) และ ธนาคารแห่งประเทศไทย (BOT)</p>
+                
+                <div class="info-box info-box-gold" style="margin-top: 15px; padding: 15px;">
+                    <p style="font-size: 15px; font-weight: 700; margin-bottom: 5px;">อธิบายกราฟให้นักศึกษาฟัง:</p>
+                    <p style="font-size: 14px; line-height: 1.5; font-style: italic;">"พวกคุณเห็นช่องว่างระหว่างเส้นสีเขียวและสีแดงที่ถ่างออกไหมครับ? นี่คือเหตุผลว่าทำไมคุณดูแค่ GDPไม่ได้ GDP โต 2.5% ดูเหมือนเศรษฐกิจบวก แต่หนี้ที่พอกพูนระดับ 90% แปลว่า'รายได้ในอนาคตถูกดึงมาใช้หมดแล้ว'นี่คือภาพที่น่ากลัวที่สุดสำหรับคนทำงานสายธนาคารและการเงิน"</p>
+                </div>
+            </div>
+            <div class="delay-2">
+                <div class="graph-frame">
+                    <img src="the_jaws_of_risk_storytelling_chart.jpg" alt="The Jaws of Risk Chart" onerror="this.src='https://via.placeholder.com/800x600?text=Graph+Not+Found'">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTOR 1 -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบต่อ 5 ภาคธุรกิจหลัก: 1. ภาคธนาคารพาณิชย์</h2>
+        <div class="info-box delay-1">
+            <strong>สถานการณ์จริง:</strong> ธปท. รายงานว่า สินเชื่อกล่าวถึงเป็นพิเศษ (Special Mention Loan: SM) หรือในมาตรฐานบัญชี TFRS 9 เรียกว่า สินเชื่อ Stage 2 (Significant Increase in Credit Risk - SICR) ซึ่งหมายถึงลูกหนี้ที่มีการค้างชำระระหว่าง 31-90 วัน (Days Past Due: DPD) ในกลุ่มสินเชื่อรถยนต์และ SME พุ่งสูงขึ้นอย่างมีนัยสำคัญ นี่คือสัญญาณเตือนภัยล่วงหน้า (Early Warning Sign) ก่อนที่หนี้จะตกชั้นไปเป็นหนี้เสีย (NPL)
+        </div>
+        <div class="info-box info-box-gold delay-2">
+            <strong>ผลกระทบ:</strong> ธนาคารต้องกันเงินกำไรมาตั้งสำรอง ECL (Expected Credit Loss - การตั้งสำรองเผื่อหนี้สงสัยจะสูญล่วงหน้า) เพิ่มขึ้น ซึ่งกัดกิน Net Profit (กำไรสุทธิ) โดยตรง ธนาคารจึงต้องทำ Credit Tightening (การคุมเข้ม/เหยียบเบรกการปล่อยสินเชื่อใหม่) ส่งผลให้ Loan Growth (อัตราการเติบโตของสินเชื่อ) อยู่ในระดับต่ำ
+        </div>
+    </div>
+
+    <!-- SECTOR 2 -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบต่อ 5 ภาคธุรกิจหลัก: 2. ภาคอสังหาริมทรัพย์</h2>
+        <div class="info-box delay-1">
+            <strong>สถานการณ์จริง:</strong> Rejection Rate (อัตราที่ธนาคารปฏิเสธการให้สินเชื่อกับลูกค้าที่ยื่นกู้) สำหรับบ้านระดับราคาต่ำกว่า 3 ล้านบาท พุ่งสูงถึง 50-60%
+        </div>
+        <div class="info-box info-box-gold delay-2">
+            <strong>ผลกระทบ:</strong> แม้บริษัทอสังหาฯ จะทำการตลาดเก่งแค่ไหน มีคนมาจองบ้านเต็มโครงการจนมียอด Backlog (ยอดขายที่รอรับรู้รายได้ / บ้านที่ลูกค้าจองแล้วแต่ยังไม่ได้โอนกรรมสิทธิ์) สูงมาก แต่ถ้าธนาคารไม่ปล่อยกู้ให้ลูกค้า การ Revenue Recognition (การรับรู้รายได้ทางบัญชี ซึ่งต้องรอให้โอนกรรมสิทธิ์สำเร็จก่อน) ก็ไม่เกิด ทำให้ Cash flow (กระแสเงินสดรับ) ของบริษัทอสังหาฯ ติดขัด
+        </div>
+    </div>
+
+    <!-- SECTOR 3 -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบต่อ 5 ภาคธุรกิจหลัก: 3. ภาคการส่งออก</h2>
+        <div class="info-box delay-1">
+            <strong>สถานการณ์จริง:</strong> ค่าเงินบาทมีความผันผวนสูงจากทิศทางดอกเบี้ยของธนาคารกลางสหรัฐฯ (Fed) และความขัดแย้งทางภูมิรัฐศาสตร์
+        </div>
+        <div class="info-box info-box-gold delay-2">
+            <strong>ผลกระทบ:</strong> สมมติผู้ส่งออกชิ้นส่วนอิเล็กทรอนิกส์มี Margin (อัตรากำไรขั้นต้น) แค่ 5% หากทำราคาขายในรูป USD ไว้ แล้วไม่ได้ทำ Hedging (การซื้อเครื่องมือทางการเงินเพื่อป้องกันความเสี่ยงจากอัตราแลกเปลี่ยน เช่น ทำสัญญา Forward ล็อกค่าเงินไว้ล่วงหน้า) วันที่รับเงินค่าเงินบาทแข็งค่าขึ้น 5% เท่ากับว่า Operating Profit (กำไรจากการดำเนินงาน) ของลอตนั้นหายไปทั้งหมด
+        </div>
+    </div>
+
+    <!-- SECTOR 4 -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบต่อ 5 ภาคธุรกิจหลัก: 4. ภาคค้าปลีก</h2>
+        <div class="info-box delay-1">
+            <strong>สถานการณ์จริง:</strong> การฟื้นตัวทางเศรษฐกิจแบบ K-Shaped Recovery (การฟื้นตัวแบบรวยกระจุกจนกระจาย; ธุรกิจและคนรายได้สูงฟื้นตัวพุ่งขึ้นเหมือนเส้น K ขาขึ้น แต่คนฐานรากกลับแย่ลงเหมือนเส้น K ขาลง) ทำให้กำลังซื้อของกลุ่มฐานรากเปราะบางอย่างหนักจากปัญหาหนี้ครัวเรือน
+        </div>
+        <div class="info-box info-box-gold delay-2">
+            <strong>ผลกระทบ:</strong> Volume (ปริมาณชิ้นสินค้าที่ขายได้) ชะลอตัว CFO ต้องบริหาร Working Capital (เงินทุนหมุนเวียนที่ใช้ดำเนินกิจการ) อย่างเข้มงวด ลด Inventory Days (จำนวนวันเฉลี่ยที่สินค้าค้างอยู่ในสต๊อก ยิ่งค้างนานยิ่งจมทุน) และอาจต้องยอมจัดโปรโมชันลดราคาเพื่อดึงเงินสดกลับมา แม้จะทำให้ Gross Margin (อัตรากำไรขั้นต้นจากการขาย) หดตัวลงก็ตาม
+        </div>
+    </div>
+
+    <!-- SECTOR 5 -->
+    <div class="slide">
+        <h2 class="slide-title">ผลกระทบต่อ 5 ภาคธุรกิจหลัก: 5. ภาคยานยนต์และสินเชื่อเช่าซื้อ</h2>
+        <div class="info-box delay-1">
+            <strong>สถานการณ์จริง:</strong> ยอดขายรถยนต์ ICE (Internal Combustion Engine - รถยนต์ที่ใช้เครื่องยนต์สันดาปหรือรถเติมน้ำมัน) ในประเทศหดตัวรุนแรง ประกอบกับการเข้ามาทำ Price War (สงครามตัดราคา) ของรถยนต์ EV จากจีน และไฟแนนซ์คุมเข้มการปล่อยสินเชื่อใหม่
+        </div>
+        <div class="info-box info-box-gold delay-2">
+            <strong>ผลกระทบ:</strong> กระทบเป็นลูกโซ่ตั้งแต่ OEM (Original Equipment Manufacturer - ผู้รับจ้างผลิตชิ้นส่วนรถยนต์) ที่ออเดอร์หาย ไปจนถึงเต็นท์รถมือสองและไฟแนนซ์ที่ Collateral Value (มูลค่าของหลักประกัน ซึ่งก็คือตัวรถยนต์ที่ลูกค้าเอามาค้ำประกันหนี้) ร่วงลงอย่างหนัก ส่งผลให้ธนาคารต้องบันทึกขาดทุนจากการขายรถยึด หรือที่เรียกว่า Credit Cost (ต้นทุนความเสี่ยงจากการให้สินเชื่อ) พุ่งสูงขึ้น กระทบงบกำไรขาดทุนอย่างหลีกเลี่ยงไม่ได้
+        </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- MODULE 4 - DISCUSSION & ANALYSIS                     -->
+    <!-- ================================================== -->
+    <div class="slide">
+        <div class="cover">
+            <h1>5. Discussion & Analysis</h1>
+            <p class="delay-1">โจทย์ชวนคิดสำหรับนักศึกษา</p>
+        </div>
+    </div>
+
+    <!-- OBJECTIVE -->
+    <div class="slide">
+        <h2 class="slide-title">เป้าหมายของการทำ Discussion & Analysis</h2>
+        <p class="delay-1">การทำ Discussion & Analysis ในช่วงนี้ของคลาส มีเป้าหมายเพื่อให้นักศึกษาได้ฝึกฝนกระบวนการคิด:</p>
+        <div class="grid-3 delay-2" style="margin-top: 30px;">
+            <div class="info-box" style="text-align: center; border-top: 8px solid var(--navy); border-left: none;">
+                <i class="fa-solid fa-newspaper" style="font-size: 50px; color: var(--navy); margin-bottom: 20px;"></i>
+                <p style="font-size: 18px;">เปลี่ยน "ข้อมูลข่าวสารระดับมหภาค (Macro News)"</p>
+            </div>
+            <div class="info-box" style="text-align: center; border-top: 8px solid var(--slate); border-left: none;">
+                <i class="fa-solid fa-chart-pie" style="font-size: 50px; color: var(--slate); margin-bottom: 20px;"></i>
+                <p style="font-size: 18px;">ให้กลายเป็น "การประเมินผลกระทบต่องบการเงิน (Financial Impact)"</p>
+            </div>
+            <div class="info-box info-box-gold" style="text-align: center; border-top: 8px solid var(--gold); border-left: none;">
+                <i class="fa-solid fa-chess-knight" style="font-size: 50px; color: var(--gold); margin-bottom: 20px;"></i>
+                <p style="font-size: 18px;">และนำไปสู่ "การกำหนดกลยุทธ์ (Actionable Strategy)" อย่างเป็นรูปธรรม</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENARIO -->
+    <div class="slide">
+        <h2 class="slide-title">สถานการณ์จำลอง (Scenario)</h2>
+        <div class="delay-1" style="background: var(--navy); padding: 50px; border-radius: 20px; color: white; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -30px; right: -30px; opacity: 0.15;">
+                <i class="fa-solid fa-tower-broadcast blinking" style="font-size: 250px; color: var(--gold);"></i>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px;">
+                <div class="blinking" style="background: red; color: white; padding: 5px 20px; border-radius: 8px; font-weight: bold; font-family: 'Kanit'; font-size: 20px;">BREAKING NEWS</div>
+                <p style="color: var(--gold); margin: 0; font-size: 24px; font-weight: 600;">เช้าวันจันทร์ สำนักข่าวเศรษฐกิจพาดหัวใหญ่ว่า:</p>
+            </div>
+            
+            <h3 style="color: white; font-size: 40px; line-height: 1.4; margin-bottom: 25px; font-weight: 500;">
+                "สภาพัฒน์ฯ หั่นเป้า GDP ปีนี้เหลือโตเพียง 2.2%<br>(ต่ำกว่าที่ตลาดคาดการณ์ไว้ที่ 3.0%)"
+            </h3>
+            
+            <p style="color: #cbd5e1; font-size: 22px; border-left: 6px solid var(--gold); padding-left: 25px; line-height: 1.5;">
+                เนื่องจากการบริโภคในประเทศชะลอตัวหนัก<br>จากปัญหาหนี้ครัวเรือนที่กดดันกำลังซื้อ
+            </p>
+        </div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="slide">
+        <h2 class="slide-title">คำถามในห้องเรียน (Discussion Time)</h2>
+        <div class="delay-1" style="background: #fffcf0; padding: 20px 30px; border-radius: 15px; border: 2px dashed var(--gold); margin-bottom: 30px; display: flex; align-items: center; gap: 25px;">
+            <i class="fa-regular fa-clock" style="font-size: 60px; color: var(--navy);"></i>
+            <div>
+                <p style="margin: 0 0 5px 0; font-weight: 700; color: var(--navy); font-size: 22px;">(ให้เวลาคิด 3 นาที และสุ่มถามทีละกลุ่มธุรกิจ):</p>
+                <p style="margin: 0; font-size: 20px; color: var(--slate); font-style: italic;">"หากคุณดำรงตำแหน่งผู้บริหารระดับสูงต่อไปนี้ ข่าวนี้ทำให้คุณต้องสั่งการลูกน้องให้ไปตรวจสอบ (Monitor) หรือกังวลเรื่องอะไรในงบการเงินมากที่สุด และคุณจะเตรียมแผนตั้งรับอย่างไร?"</p>
+            </div>
+        </div>
+        
+        <div class="two-col delay-2">
+            <div class="info-box" style="text-align: center; padding: 35px; background: white; border: 2px solid #e2e8f0; border-top: 8px solid var(--navy); border-left: none;">
+                <i class="fa-solid fa-shop" style="font-size: 60px; color: var(--navy); margin-bottom: 20px;"></i>
+                <p style="font-size: 22px; margin: 0;">คุณคือ <strong>CFO ของบริษัทค้าปลีกขนาดใหญ่</strong><br>(Retail Corporate)</p>
+            </div>
+            <div class="info-box" style="text-align: center; padding: 35px; background: white; border: 2px solid #e2e8f0; border-top: 8px solid var(--gold); border-left: none;">
+                <i class="fa-solid fa-building-columns" style="font-size: 60px; color: var(--gold); margin-bottom: 20px;"></i>
+                <p style="font-size: 22px; margin: 0;">คุณคือ <strong>ผู้จัดการสาขา/ผู้บริหารความเสี่ยง ของธนาคารพาณิชย์</strong><br>(Banking Risk Manager)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- END SLIDE -->
+    <div class="slide">
+        <div class="cover">
+            <h1>Q & A</h1>
+            <p class="delay-1">จบการนำเสนอ</p>
+            <div class="delay-2" style="margin-top:60px; border-top:1px solid rgba(255,255,255,0.2); padding-top:40px;">
+                <p style="font-size:30px; color:var(--gold); font-weight: 600; margin-bottom: 10px;">อาจารย์ ดร.วัลลภ คุ้มประดิษฐ์</p>
+                <p style="font-size:22px;">คณะเศรษฐศาสตร์ มหาวิทยาลัยรามคำแหง</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION OVERLAY CONTROLS (BULLETPROOF) -->
+    <div id="btnLeft" style="position:absolute; top:0; left:0; width:150px; height:100%; z-index:9999; cursor:pointer;" title="หน้าก่อนหน้า"></div>
+    <div id="btnRight" style="position:absolute; top:0; right:0; width:150px; height:100%; z-index:9999; cursor:pointer;" title="หน้าถัดไป"></div>
+
+    <div class="bottom-controls">
+        <button class="circle-btn" id="btnBottomLeft"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="circle-btn" id="btnBottomRight"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+</div>
+
+<script>
+    // Configuration
+    const presentation = document.getElementById('presentation');
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progressBar');
+    let currentIdx = 0;
+
+    // Auto-scale to fit window
+    function scalePresentation() {
+        const scaleX = window.innerWidth / 1280;
+        const scaleY = window.innerHeight / 720;
+        const scale = Math.min(scaleX, scaleY);
+        presentation.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', scalePresentation);
+    scalePresentation();
+
+    // Logic: Display none on inactive, flex on active
+    function renderSlide() {
+        slides.forEach((slide, idx) => {
+            if (idx === currentIdx) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+        progressBar.style.width = ((currentIdx + 1) / slides.length) * 100 + '%';
+    }
+
+    function goNext() {
+        if (currentIdx < slides.length - 1) {
+            currentIdx++;
+            renderSlide();
+        }
+    }
+
+    function goPrev() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            renderSlide();
+        }
+    }
+
+    // Explicit Click Areas (Left/Right)
+    document.getElementById('btnRight').addEventListener('click', (e) => { e.stopPropagation(); goNext(); });
+    document.getElementById('btnLeft').addEventListener('click', (e) => { e.stopPropagation(); goPrev(); });
+
+    // Global Click Event (Click anywhere else to advance)
+    window.addEventListener('click', (e) => {
+        if (e.target.closest('.circle-btn')) return;
+        // Prevent if user is highlighting text
+        if (window.getSelection().toString().length > 0) return;
+        goNext();
+    });
+
+    document.getElementById('btnBottomRight').addEventListener('click', (e) => { e.stopPropagation(); goNext(); });
+    document.getElementById('btnBottomLeft').addEventListener('click', (e) => { e.stopPropagation(); goPrev(); });
+
+    // Keyboard Events
+    window.addEventListener('keydown', (e) => {
+        if (['ArrowRight', 'Space', 'Enter'].includes(e.code) || e.key === ' ') {
+            goNext();
+        } else if (['ArrowLeft', 'Backspace'].includes(e.code)) {
+            goPrev();
+        }
+    });
+
+    // Initialize
+    renderSlide();
+</script>
+
+</body>
+</html>
